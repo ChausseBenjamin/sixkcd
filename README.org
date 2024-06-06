@@ -1,4 +1,4 @@
-#+title: SiXKCD: XKCD comics in the xkcd format
+#+title: SiXKCD: XKCD comics in the sixel format
 #+author: Benjamin Chausse
 
 XKCD is great. What's even better is viewing his comics
