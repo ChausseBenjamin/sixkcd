@@ -1,0 +1,6 @@
+#+title: SiXKCD: XKCD comics in the xkcd format
+#+author: Benjamin Chausse
+
+XKCD is great. What's even better is viewing his comics
+directly in your terminal using sixel graphics!
+
