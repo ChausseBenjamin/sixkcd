@@ -1,6 +1,37 @@
-#+title: SiXKCD: XKCD comics in the sixel format
 #+author: Benjamin Chausse
+
+* SiXKCD: XKCD comics in the sixel format
 
 XKCD is great. What's even better is viewing his comics
 directly in your terminal using sixel graphics!
+
+To achieve this, you need a terminal that supports it.
+Here's a good reference to find one or learn if yours
+already does:
+
+[[https://www.arewesixelyet.com/]]
+
+#+HTML:<center>
+[[./demo.png]]
+#+HTML:</center>
+
+** Installation
+
+I'll probably create a =Makefile= in the future
+to streamline the process. In the meantime, you
+can build the binary in the following way.
+
+#+begin_src sh
+# Creating the binary
+go get download
+go build -o sixkcd ./sixkcd.go
+# Installing it on your system
+sudo cp sixkcd /usr/local/bin
+#+end_src
+
+Uninstalling is as simple as:
+
+#+begin_src sh
+sudo rm /usr/local/bin/sixkcd
+#+end_src
 
