@@ -17,21 +17,9 @@ already does:
 
 ** Installation
 
-I'll probably create a =Makefile= in the future
-to streamline the process. In the meantime, you
-can build the binary in the following way.
-
 #+begin_src sh
-# Creating the binary
-go get download
-go build -o sixkcd ./sixkcd.go
-# Installing it on your system
-sudo cp sixkcd /usr/local/bin
+make
+sudo make install
+# To uninstall:
+sudo make uninstall
 #+end_src
-
-Uninstalling is as simple as:
-
-#+begin_src sh
-sudo rm /usr/local/bin/sixkcd
-#+end_src
-

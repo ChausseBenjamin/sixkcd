@@ -22,7 +22,7 @@ const (
   target = "info.0.json"
 )
 
-type Xkcd struct {
+type Comic struct {
   Month string
   Num int
   Link string
@@ -40,11 +40,22 @@ func main() {
   app := &cli.App{
     Name: "siXKCD",
     Usage: "Sixel viewer/fetcher for XKCD Comics",
+    Authors: []*cli.Author{
+      {
+        Name: "Benjamin Chausse",
+        Email: "benjamin@chausse.xyz",
+      },
+    },
     Flags: []cli.Flag{
       &cli.StringFlag{
         Name: "id",
         Aliases: []string{"i"},
         Usage: "Specify which comic `ID` to fetch.\nA value of 0 will fetch the latest comic (default: random)",
+      },
+      &cli.BoolFlag{
+        Name: "raw",
+        Aliases: []string{"r"},
+        Usage: "Output only the sixel image without the title or the alternate caption.",
       },
     },
     Action: func(ctx *cli.Context) error {
@@ -62,11 +73,17 @@ func main() {
       }
       var img image.Image = fetchImg(comic.Img)
 
-      fmt.Println("Title: ", comic.Title)
       encoder := sixel.NewEncoder(os.Stdout)
-      _ = encoder.Encode(img)
-      if comic.Alt != "" {
-        fmt.Println(comic.Alt)
+
+      switch ctx.Bool("raw") {
+      case true:
+        _ = encoder.Encode(img)
+      default:
+        fmt.Println("Title: ", comic.Title)
+        _ = encoder.Encode(img)
+        if comic.Alt != "" {
+          fmt.Println(comic.Alt)
+        }
       }
 
 
@@ -79,7 +96,7 @@ func main() {
   }
 }
 
-func fetchComic(id string) Xkcd {
+func fetchComic(id string) Comic {
   var res *http.Response
 
   var err error
@@ -89,23 +106,23 @@ func fetchComic(id string) Xkcd {
   } else {
     res, err = http.Get(hostname+"/"+id+"/"+target)
   }
+  defer res.Body.Close()
 
   if err != nil {
     log.Fatal(err)
   }
 
   content, err := io.ReadAll(res.Body)
-  res.Body.Close()
   if err != nil {
     log.Fatal(err)
   }
-  today := Xkcd{}
-  err = json.Unmarshal(content, &today)
+  comic := Comic{}
+  err = json.Unmarshal(content, &comic)
   if err != nil {
     log.Fatal(err)
   }
 
-  return today
+  return comic
 }
 
 func fetchImg(url string) image.Image {

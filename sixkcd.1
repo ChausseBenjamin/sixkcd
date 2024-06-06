@@ -1,0 +1,27 @@
+.TH siXKCD 1 "June 2024" "1.0" "siXKCD Manual"
+.SH NAME
+siXKCD \- Sixel viewer/fetcher for XKCD Comics
+.SH SYNOPSIS
+.B siXKCD
+[\fBglobal options\fR] \fBcommand\fR [\fBcommand options\fR]
+.SH DESCRIPTION
+.B siXKCD
+is a tool to view and fetch XKCD comics in sixel format.
+.SH AUTHOR
+.B Benjamin Chausse
+.br
+<benjamin@chausse.xyz>
+.SH COMMANDS
+.TP
+.B help, h
+Shows a list of commands or help for one command.
+.SH GLOBAL OPTIONS
+.TP
+.BR \-\-id\ ID ,\ \-i\ ID
+Specify which comic ID to fetch. A value of 0 will fetch the latest comic (default: random).
+.TP
+.BR \-\-raw ,\ \-r
+Output only the sixel image without the title or the alternate caption. (default: false)
+.TP
+.BR \-\-help ,\ \-h
+Show help.
