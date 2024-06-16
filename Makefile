@@ -13,7 +13,7 @@ MANPREFIX=$(PREFIX)/share/man
 sixkcd: $(SRC)
 	go mod download
 	go mod verify
-	go build -ldflags "-X main.version=$(VERSION)" -o $(CMD) ./$(CMD).go
+	go build -ldflags "-s -w -X main.version=$(VERSION)" -o $(CMD) ./$(CMD).go
 
 install: sixkcd
 	sudo mkdir -p $(PREFIX)/bin
