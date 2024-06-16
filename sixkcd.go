@@ -22,6 +22,8 @@ const (
   target = "info.0.json"
 )
 
+var version string
+
 type Comic struct {
   Month string
   Num int
@@ -40,6 +42,7 @@ func main() {
   app := &cli.App{
     Name: "siXKCD",
     Usage: "Sixel viewer/fetcher for XKCD Comics",
+    Version: version,
     Authors: []*cli.Author{
       {
         Name: "Benjamin Chausse",
