@@ -19,7 +19,7 @@ already does:
 
 #+begin_src sh
 make
-sudo make install
+make install
 # To uninstall:
-sudo make uninstall
+make uninstall
 #+end_src

@@ -15,18 +15,18 @@ sixkcd: $(SRC)
 	go mod verify
 	go build -ldflags "-X main.version=$(VERSION)" -o $(CMD) ./$(CMD).go
 
-install: all
-	mkdir -p $(PREFIX)/bin
-	mkdir -p $(MANPREFIX)/man1
-	cp -f $(CMD) $(PREFIX)/bin
-	cp -f $(CMD).1 $(MANPREFIX)/man1
+install: sixkcd
+	sudo mkdir -p $(PREFIX)/bin
+	sudo mkdir -p $(MANPREFIX)/man1
+	sudo cp -f $(CMD) $(PREFIX)/bin
+	sudo cp -f $(CMD).1 $(MANPREFIX)/man1
 
 clean:
 	rm -f ./$(CMD)
 
 uninstall:
-	rm -f $(PREFIX)/bin/$(CMD)
-	rm -f $(MANPREFIX)/man1/$(CMD).1
+	sudo rm -f $(PREFIX)/bin/$(CMD)
+	sudo rm -f $(MANPREFIX)/man1/$(CMD).1
 
 info:
 	@echo "$(CMD)"
