@@ -7,7 +7,6 @@ import (
 	_ "image/png"
 	_ "image/jpeg"
 	"io"
-	"log"
 	"math/rand"
 	"net/http"
 	"os"
@@ -58,83 +57,101 @@ func main() {
         Usage: "Output only the sixel image without the title or the alternate caption.",
       },
     },
-    Action: func(ctx *cli.Context) error {
-      comic := fetchComic("latest")
-      switch ctx.String("id") {
-      case "0":
-        // Latest is already fetched
-        break
-      case "":
-        // Random
-        rand := rand.Intn(comic.Num+1)
-        comic = fetchComic(strconv.Itoa(rand))
-      default:
-        comic = fetchComic(ctx.String("id"))
-      }
-      var img image.Image = fetchImg(comic.Img)
-
-      encoder := sixel.NewEncoder(os.Stdout)
-
-      switch ctx.Bool("raw") {
-      case true:
-        _ = encoder.Encode(img)
-      default:
-        fmt.Println("Title: ", comic.Title)
-        _ = encoder.Encode(img)
-        if comic.Alt != "" {
-          fmt.Println(comic.Alt)
-        }
-      }
-
-
-      return nil
-    },
+    Action: appAction,
   }
 
   if err := app.Run(os.Args); err != nil {
-    log.Fatal(err)
+    fmt.Printf("Error: %s\n", err.Error())
+    os.Exit(1)
   }
 }
 
-func fetchComic(id string) Comic {
-  var res *http.Response
+func appAction(ctx *cli.Context) error {
+  var comic *Comic
+  var fetchErr error
 
-  var err error
+  comic, fetchErr = fetchComic("latest")
+  if fetchErr != nil {
+    return fetchErr
+  }
 
+  switch ctx.String("id") {
+  case "0":
+    // Latest is already fetched
+    break
+  case "":
+    // Random
+    rand := rand.Intn(comic.Num+1)
+    comic, fetchErr = fetchComic(strconv.Itoa(rand))
+  default:
+    comic, fetchErr = fetchComic(ctx.String("id"))
+  }
+
+  if fetchErr != nil {
+    return fetchErr
+  }
+
+  img, err := fetchImg(comic.Img)
+  if err != nil {
+    return err
+  }
+
+  isRaw := ctx.Bool("raw")
+  if !isRaw {
+    fmt.Println("Title: ", comic.Title)
+  }
+
+  if err := sixel.NewEncoder(os.Stdout).Encode(img); err != nil {
+    return err
+  }
+
+  if !isRaw && comic.Alt != "" {
+    fmt.Println(comic.Alt)
+  }
+
+  return nil
+}
+
+func fetchComic(id string) (*Comic, error){
+  comicUrl := hostname+"/"+id+"/"+target
   if id == "latest" {
-    res, err = http.Get(hostname+"/"+target)
-  } else {
-    res, err = http.Get(hostname+"/"+id+"/"+target)
+    comicUrl = hostname+"/"+target
+  }
+
+  res, err := http.Get(comicUrl)
+  if err != nil {
+    return nil, err
   }
   defer res.Body.Close()
 
-  if err != nil {
-    log.Fatal(err)
+  if res.StatusCode != http.StatusOK {
+    return nil, fmt.Errorf("GET %s status code: %d", comicUrl, res.StatusCode)
   }
 
   content, err := io.ReadAll(res.Body)
   if err != nil {
-    log.Fatal(err)
-  }
-  comic := Comic{}
-  err = json.Unmarshal(content, &comic)
-  if err != nil {
-    log.Fatal(err)
+    return nil, err
   }
 
-  return comic
+  comic := Comic{}
+  if err := json.Unmarshal(content, &comic); err != nil {
+    return nil, err
+  }
+
+  return &comic, nil
 }
 
-func fetchImg(url string) image.Image {
+func fetchImg(url string) (image.Image, error) {
   res, err := http.Get(url)
   if err != nil {
-    log.Fatal(err)
+    return nil, err
   }
+  defer res.Body.Close()
+
   img, _, err := image.Decode(res.Body)
   if err != nil {
-    log.Fatal(err)
+    return nil, err
   }
-  res.Body.Close()
 
-  return img
+  return img, nil
 }
