@@ -1,6 +1,14 @@
-#+author: Benjamin Chausse
+#+author: Benjamin Chausse <benjamin@chausse.xyz>
 
-* SiXKCD: XKCD comics in the sixel format
+#+HTML: <div align="center">
+
+#+HTML: <img alt="Minimal terminal logo with a graphical stick figure" src="logo.png" width="250" /><br/>
+
+* SiXKCD
+
+XKCD comics in the sixel format
+
+#+HTML: </div>
 
 XKCD is great. What's even better is viewing his comics
 directly in your terminal using sixel graphics!
