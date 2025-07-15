@@ -1,4 +1,4 @@
-.TH siXKCD 1 "June 2024" "1.0" "siXKCD Manual"
+.TH siXKCD 1 "July 2025" "1.1" "siXKCD Manual"
 .SH NAME
 siXKCD \- Sixel viewer/fetcher for XKCD Comics
 .SH SYNOPSIS
@@ -6,7 +6,11 @@ siXKCD \- Sixel viewer/fetcher for XKCD Comics
 [\fBglobal options\fR] \fBcommand\fR [\fBcommand options\fR]
 .SH DESCRIPTION
 .B siXKCD
-is a tool to view and fetch XKCD comics in sixel format.
+is a tool to view and fetch XKCD comics in sixel or kitty graphics format.
+.SH ENVIRONMENT
+.TP
+.B SIXKCD_RENDERER
+Set to "sixel" or "kitty" to specify the default renderer.
 .SH AUTHOR
 .B Benjamin Chausse
 .br
@@ -22,6 +26,9 @@ Specify which comic ID to fetch. A value of 0 will fetch the latest comic (defau
 .TP
 .BR \-\-raw ,\ \-r
 Output only the sixel image without the title or the alternate caption. (default: false)
+.TP
+.BR \-\-renderer\ RENDERER ,\ \-R\ RENDERER
+Specify the renderer to use: sixel, kitty (default: sixel). Can be overridden with SIXKCD_RENDERER environment variable.
 .TP
 .BR \-\-help ,\ \-h
 Show help.
