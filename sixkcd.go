@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -11,12 +12,13 @@ import (
 	"io"
 	"math/rand"
 	"net/http"
+	"net/mail"
 	"os"
 	"strconv"
 	"strings"
 
 	"github.com/mattn/go-sixel"
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 )
 
 const (
@@ -41,14 +43,14 @@ type Comic struct {
 }
 
 func main() {
-	app := &cli.App{
+	app := &cli.Command{
 		Name:    "siXKCD",
 		Usage:   "Sixel viewer/fetcher for XKCD Comics",
 		Version: version,
-		Authors: []*cli.Author{
-			{
-				Name:  "Benjamin Chausse",
-				Email: "benjamin@chausse.xyz",
+		Authors: []any{
+			mail.Address{
+				Name:    "Benjamin Chausse",
+				Address: "benjamin@chausse.xyz",
 			},
 		},
 		Flags: []cli.Flag{
@@ -67,19 +69,19 @@ func main() {
 				Aliases: []string{"R"},
 				Usage:   "Specify the renderer to use: sixel, kitty",
 				Value:   "sixel",
-				EnvVars: []string{"SIXKCD_RENDERER"},
+				Sources: cli.EnvVars("SIXKCD_RENDERER"),
 			},
 		},
 		Action: appAction,
 	}
 
-	if err := app.Run(os.Args); err != nil {
+	if err := app.Run(context.Background(), os.Args); err != nil {
 		fmt.Printf("Error: %s\n", err.Error())
 		os.Exit(1)
 	}
 }
 
-func appAction(ctx *cli.Context) error {
+func appAction(ctx context.Context, cmd *cli.Command) error {
 	var comic *Comic
 	var fetchErr error
 
@@ -88,7 +90,7 @@ func appAction(ctx *cli.Context) error {
 		return fetchErr
 	}
 
-	switch ctx.String("id") {
+	switch cmd.String("id") {
 	case "0":
 		// Latest is already fetched
 		break
@@ -97,7 +99,7 @@ func appAction(ctx *cli.Context) error {
 		rand := rand.Intn(comic.Num + 1)
 		comic, fetchErr = fetchComic(strconv.Itoa(rand))
 	default:
-		comic, fetchErr = fetchComic(ctx.String("id"))
+		comic, fetchErr = fetchComic(cmd.String("id"))
 	}
 
 	if fetchErr != nil {
@@ -109,12 +111,12 @@ func appAction(ctx *cli.Context) error {
 		return err
 	}
 
-	isRaw := ctx.Bool("raw")
+	isRaw := cmd.Bool("raw")
 	if !isRaw {
 		fmt.Println("Title: ", comic.Title)
 	}
 
-	renderer := ctx.String("renderer")
+	renderer := cmd.String("renderer")
 	switch strings.ToLower(renderer) {
 	case "kitty":
 		if err := renderKittyImage(img); err != nil {
