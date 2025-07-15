@@ -35,6 +35,12 @@ make install
 make uninstall
 ```
 
+Or just use go as your installer (will not give you the manpage though):
+
+```sh
+go install github.com/ChausseBenjamin/sixkcd@latest
+```
+
 [1]: https://www.arewesixelyet.com/
 [2]: https://sw.kovidgoyal.net/kitty/
 [3]: https://ghostty.org/
